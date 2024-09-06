@@ -1,0 +1,61 @@
+<project name="MyApplication" default="dist" basedir=".">
+    <property name="src" location="src"/>
+    <property name="build" location="build"/>
+    <property name="dist" location="dist"/>
+    <property name="lib" location="lib"/>
+    <property name="native.dir" value="C:/Users/ahmad/Desktop/lwjgl-2.8.4/native"/>
+    <property name="assets" location="assets"/> <!-- Add this line -->
+    <!-- Compile the source files -->
+    <target name="compile">
+        <mkdir dir="${build}"/>
+        <javac srcdir="${src}" destdir="${build}" includeantruntime="false">
+            <classpath>
+                <!-- List each JAR file manually -->
+                <pathelement path="${lib}/lwjgl.jar"/>
+                <pathelement path="${lib}/lwjgl-glfw.jar"/>
+                <pathelement path="${lib}/lwjgl-opengl.jar"/>
+                <pathelement path="${lib}/lwjgl-stb.jar"/>
+                <pathelement path="${lib}/joml-1.10.8.jar"/>
+                <pathelement path="${lib}/lwjgl-natives-windows.jar"/>
+                <pathelement path="${lib}/lwjgl-stb-natives-windows.jar"/> <!-- Add this line -->
+                <!-- Add other JAR files as needed -->
+            </classpath>
+        </javac>
+    </target>
+    
+    <!-- Create the JAR with the manifest -->
+    <target name="dist" depends="compile">
+        <mkdir dir="${dist}/lib"/>
+        <copy todir="${dist}/lib">
+            <!-- Copy only the specific JAR files to dist/lib -->
+            <fileset dir="${lib}">
+                <include name="lwjgl.jar"/>
+                <include name="lwjgl-glfw.jar"/>
+                <include name="lwjgl-opengl.jar"/>
+                <include name="lwjgl-stb.jar"/>
+                <include name="joml-1.10.8.jar"/>
+                <include name="lwjgl-natives-windows.jar"/>
+                <include name="lwjgl-stb-natives-windows.jar"/> <!-- Add this line -->
+                <!-- Add other JAR files as needed -->
+            </fileset>
+        </copy>
+                <!-- Copy the assets folder -->
+        <mkdir dir="${dist}/assets"/>
+        <copy todir="${dist}/assets">
+            <fileset dir="${assets}"/>
+        </copy>
+        <mkdir dir="${dist}"/>
+        <jar destfile="${dist}/MyApplication.jar" basedir="${build}">
+            <manifest>
+                <attribute name="Main-Class" value="App"/>
+                <attribute name="Class-Path" value="lib/lwjgl.jar lib/lwjgl-glfw.jar lib/lwjgl-opengl.jar lib/lwjgl-stb.jar lib/joml-1.10.8.jar lib/lwjgl-natives-windows.jar lib/lwjgl-stb-natives-windows.jar"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <!-- Clean the build -->
+    <target name="clean">
+        <delete dir="${build}"/>
+        <delete dir="${dist}"/>
+    </target>
+</project>
