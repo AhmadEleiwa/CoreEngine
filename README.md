@@ -21,4 +21,4 @@ The `JAVA PROJECTS` view in VS Code allows you to manage your dependencies easil
 
 ## Documentation
 
-For detailed information about the project architecture, components, and usage, please refer to the [Docs.md](Docs.md) file.
+For detailed information about the project architecture, components, and usage, please refer to the [Docs.md](Overview.md) file.
