@@ -2,6 +2,14 @@
     "java.project.sourcePaths": ["src"],
     "java.project.outputPath": "bin",
     "java.project.referencedLibraries": [
-        "lib/**/*.jar"
+        "lib/joml-1.10.8.jar",
+        "lib/lwjgl.jar",
+        "lib/lwjgl-glfw.jar",
+        "lib/lwjgl-opengl.jar",
+        "lib/lwjgl-stb.jar",
+        "lib/joml-1.10.8.jar",
+        "lib/lwjgl-natives-windows.jar",
+        "lib/lwjgl-stb-natives-windows.jar",
+        // "lib/**/*.jar",
     ]
 }
