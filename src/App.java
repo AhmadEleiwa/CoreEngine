@@ -1,6 +1,6 @@
 import org.joml.Vector3f;
 import engine.GameEngine;
-import scenes.Mesh;
+import graphics.Mesh;
 import scenes.MeshNode;
 import scenes.Node;
 import scenes.Sprite2D;
