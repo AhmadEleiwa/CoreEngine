@@ -1,7 +1,14 @@
 package graphics;
 
+import scenes.ShaderProgram;
+import utils.Camera;
+
 public class Renderer {
+    private long window;
+    private Camera mainCamera;
+
     public Renderer(long window) {
+        this.window  =  window;
     }
     public void clear() {
         // Clear the screen
@@ -11,5 +18,17 @@ public class Renderer {
 
     public void cleanup() {
         // Cleanup logic for rendering
+    }
+    public long getWindow() {
+        return window;
+    }
+    public void updateViewByShader(ShaderProgram shader) {
+        mainCamera.updateViewByShader(shader);
+    }
+    public boolean isMainCameraNull(){
+        return mainCamera == null;
+    }
+    public void setMainCamera(Camera mainCamera) {
+        this.mainCamera = mainCamera;
     }
 }
