@@ -11,8 +11,7 @@ public class Sprite2D extends MeshNode {
         this.texture = texture;
         this.mesh = new Mesh(texture);
         this.unifroms.put("texture1", 0);
-        GameEngine gameEngine = GameEngine.getInstance();
-        this.shader = gameEngine.createShaderProgram("default", "assets/shaders/textureShaders/vertix.glsl",
+        this.shader = GameEngine.getInstance().createShaderProgram("default", "assets/shaders/textureShaders/vertix.glsl",
                 "assets/shaders/textureShaders/fragment.glsl");
 
     }
