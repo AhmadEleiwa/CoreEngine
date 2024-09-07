@@ -1,3 +1,4 @@
 # Ignore build and dist directories
 /build/
 /dist/
+/bin/
