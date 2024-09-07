@@ -1,11 +1,11 @@
 import org.joml.Vector3f;
 import engine.GameEngine;
 import scenes.Mesh;
-import scenes.NewMeshNode;
-import scenes.SceneManager;
+import scenes.MeshNode;
+import scenes.Node;
 import scenes.Sprite2D;
 import scripts.PlayerScript;
-import utils.Texture;
+import utils.Camera;
 
 public class App {
     public static void main(String[] args) {
@@ -16,24 +16,31 @@ public class App {
                 0.5f, 0.5f, 0.0f, // Top right
                 -0.5f, 0.5f, 0.0f // Top left
         };
-        int[] rectangleIndices = {  
+        int[] rectangleIndices = {
                 0, 1, 2,
                 0, 2, 3
         };
-        
-        // NewMeshNode node = new NewMeshNode("Rect", new Mesh(rectangleVertices, rectangleIndices));
-        // node.setColor(new Vector3f(1f, 1f, 1f));
 
-        // NewMeshNode node2 = new NewMeshNode("Rect2", new Mesh(rectangleVertices, rectangleIndices));
-        // node2.setColor(new Vector3f(1f, 1f, 1f));
-        Sprite2D player =  new Sprite2D("player", gameEngine.createTexture("assets/images/Player.png"));
+        Node node = new Node("root");
+        MeshNode node2 = new MeshNode("Rect2", new Mesh(rectangleVertices, rectangleIndices));
+
+        Sprite2D player = new Sprite2D("player", gameEngine.createTexture("assets/images/Player.png"));
         player.register(new PlayerScript());
-        // player.addChild(node);
-        // node.addChild(node2);
-        gameEngine.instantiate(player);
-        // gameEngine.instantiate(player);
-        // System.err.println(gameEngine.getNode("player/Rect/Rect2").getName());
-        
+        Sprite2D player2 = new Sprite2D("player2", gameEngine.createTexture("assets/images/Player.png"));
+
+        player2.getLocalTransform().setPosition(new Vector3f(-2, 0, 0));
+        player.getLocalTransform().setPosition(new Vector3f(0, 0, 0));
+        Camera camera = new Camera("MainCamera");
+
+        player2.addChild(node2);
+        node2.getLocalTransform().setPosition(new Vector3f(4, 0, 0));
+
+        player.addChild(camera);
+        node.addChild(player2);
+        node.addChild(player);
+        // gameEngine.setMainCamera(camera);
+        gameEngine.instantiate(node);
+
         gameEngine.run();
 
     }

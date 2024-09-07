@@ -1,4 +1,4 @@
-package scenes;
+package graphics;
 
 import java.io.BufferedReader;
 import java.io.FileReader;

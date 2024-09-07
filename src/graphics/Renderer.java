@@ -1,6 +1,5 @@
 package graphics;
 
-import scenes.ShaderProgram;
 import utils.Camera;
 
 public class Renderer {

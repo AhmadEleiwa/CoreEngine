@@ -2,6 +2,7 @@ package engine;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -10,11 +11,11 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 
 import graphics.Renderer;
+import graphics.SceneManager;
+import graphics.ShaderProgram;
 import input.Input;
 
 import scenes.Node;
-import scenes.SceneManager;
-import scenes.ShaderProgram;
 import utils.Camera;
 import utils.Texture;
 
@@ -28,6 +29,7 @@ public class GameEngine {
     private HashMap<String, Texture> textureStore;
 
     private static GameEngine instance;
+
 
     private int width = 800;
     private int height = 600;
@@ -112,13 +114,14 @@ public class GameEngine {
         double currentFrame = GLFW.glfwGetTime();
         double lastFrame = currentFrame;
         double deltaTime;
+        sceneManager.start();
         while (!GLFW.glfwWindowShouldClose(window)) {
             currentFrame = GLFW.glfwGetTime();
             deltaTime = currentFrame - lastFrame;
             lastFrame = currentFrame;
 
             // Input.update();
-
+            // programManager.
             sceneManager.update(deltaTime);
 
             renderer.clear();
@@ -150,10 +153,11 @@ public class GameEngine {
     }
 
     public void instantiate(Node node) {
-        node.addChild(new Camera("MainCamera"));
         sceneManager.addRootNode(node);
     }
-
+    public void setMainCamera(Camera camera){
+        renderer.setMainCamera(camera);
+    }
     public List<Node> findNodesByName(String name) {
         return sceneManager.getNodesByName(name);
     }
@@ -165,7 +169,18 @@ public class GameEngine {
     public ShaderProgram createShaderProgram(String name, String vertixShaderPath, String fragmentShaderPath) {
         return programManager.instance(name, vertixShaderPath, fragmentShaderPath);
     }
-
+    public ShaderProgram getProgram(String name){
+        return programManager.getProgram(name);
+    }
+    public void startProgram(String name){
+        programManager.startProgram(name);
+    }
+    public void stopProgram(String name){
+        programManager.stopProgram(name);
+    }
+    public Set<String> getProgramsNameSet(){
+        return programManager.getKeys();
+    }
     public boolean isKeyPressed(int key) {
         return GLFW.glfwGetKey(window, key) == GLFW.GLFW_PRESS;
     }

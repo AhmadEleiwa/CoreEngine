@@ -27,8 +27,7 @@ public class PlayerScript extends Script {
             dir = 0;
         }
 
-        transform.position.x += (float) (speed * deltaTime) * dir;
-        // System.out.println(transform.position.x);
+        transform.moveX((float) (speed * deltaTime) * dir);
 
     }
 

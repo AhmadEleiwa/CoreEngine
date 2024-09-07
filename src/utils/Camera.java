@@ -5,8 +5,8 @@ import org.joml.Vector3f;
 
 import engine.GameEngine;
 import graphics.Renderer;
+import graphics.ShaderProgram;
 import scenes.Node;
-import scenes.ShaderProgram;
 
 public class Camera extends Node {
     protected Transformation transformation;

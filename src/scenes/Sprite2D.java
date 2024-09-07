@@ -1,6 +1,7 @@
 package scenes;
 
 import engine.GameEngine;
+import graphics.Mesh;
 import utils.Texture;
 
 public class Sprite2D extends MeshNode {

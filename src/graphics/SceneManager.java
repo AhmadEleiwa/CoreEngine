@@ -1,9 +1,10 @@
-package scenes;
+package graphics;
 
 import java.util.ArrayList;
 
 import java.util.List;
-import graphics.Renderer;
+import scenes.MeshNode;
+import scenes.Node;
 
 public class SceneManager {
     private Node rootNode;
