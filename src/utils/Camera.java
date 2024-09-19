@@ -56,6 +56,9 @@ public class Camera extends Node {
     public void setTarget(Vector3f target) {
         this.target = target;
     }
+    public Matrix4f getProjecMatrix4f(){
+        return this.projectionMatrix4f;
+    }
 
     // Up direction (usually along the Y axis)
     protected Vector3f up = new Vector3f(0, 1, 0);

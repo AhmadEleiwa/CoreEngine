@@ -48,7 +48,7 @@ public class GameEngine {
     private GameEngine() {
         init();
 
-        renderer = new Renderer(window);
+        renderer = new Renderer(window, width, height);
         sceneManager = new SceneManager();
         programManager = new ProgramManager();
         // inputManager = new InputManager(window);
@@ -184,5 +184,7 @@ public class GameEngine {
     public boolean isKeyPressed(int key) {
         return GLFW.glfwGetKey(window, key) == GLFW.GLFW_PRESS;
     }
-
+    public Renderer getRenderer(){
+        return renderer;
+    }
 }

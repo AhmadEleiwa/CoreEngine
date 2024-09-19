@@ -1,13 +1,20 @@
 package graphics;
 
+import org.joml.Matrix4f;
+
 import utils.Camera;
 
 public class Renderer {
     private long window;
+    private int windowWidth;
+    private int windowHeight;
+
     private Camera mainCamera;
 
-    public Renderer(long window) {
+    public Renderer(long window, int windowWidth,  int windowHeight) {
         this.window  =  window;
+        this.windowWidth  = windowWidth;
+        this.windowHeight = windowHeight;
     }
     public void clear() {
         // Clear the screen
@@ -30,4 +37,17 @@ public class Renderer {
     public void setMainCamera(Camera mainCamera) {
         this.mainCamera = mainCamera;
     }
+    public Matrix4f getViewMatrix(){
+        return mainCamera.getLocalTransform().getTransformationMatrix();    
+    }
+    public Matrix4f getProjectionMatrix(){
+        return mainCamera.getProjecMatrix4f();    
+    }
+    public int getWindowWidth() {
+        return windowWidth;
+    }
+    public int getWindowHeight() {
+        return windowHeight;
+    }
+
 }

@@ -7,12 +7,10 @@ public abstract class Script {
     protected Transform transform;
     protected Node node;
 
-    public void setTransform(Transform transform) {
+    public void init(Transform transform, Node node) {
         this.transform = transform;
-    }
-
-    public void setNode(Node node) {
         this.node = node;
+
     }
 
     public abstract void start();
@@ -22,4 +20,5 @@ public abstract class Script {
     public void onCollision() {
 
     };
+
 }

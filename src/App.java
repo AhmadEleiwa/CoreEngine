@@ -4,6 +4,7 @@ import graphics.Mesh;
 import scenes.MeshNode;
 import scenes.Node;
 import scenes.Sprite2D;
+import scripts.CameraScript;
 import scripts.PlayerScript;
 import utils.Camera;
 
@@ -31,7 +32,8 @@ public class App {
         player2.getLocalTransform().setPosition(new Vector3f(-2, 0, 0));
         player.getLocalTransform().setPosition(new Vector3f(0, 0, 0));
         Camera camera = new Camera("MainCamera");
-
+        CameraScript cameraScript  = new CameraScript();
+        camera.register(cameraScript);
         player2.addChild(node2);
         node2.getLocalTransform().setPosition(new Vector3f(4, 0, 0));
 

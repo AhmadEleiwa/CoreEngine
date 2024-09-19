@@ -19,6 +19,8 @@ public class Node {
     protected Transform localTransform;
     protected Transform globalTransform;
 
+    protected boolean inheritsTransform = true;
+
     protected Script script;
     // protected GameEngine gameEngine ;
 
@@ -34,10 +36,11 @@ public class Node {
    
     public void register(Script script) {
         this.script = script;
-        this.script.setTransform(localTransform);
-        this.script.setNode(this);
+        this.script.init(localTransform, this);
     }
-
+    public void setInheritsTransform(boolean inheritsTransform) {
+        this.inheritsTransform = inheritsTransform;
+    }
     public String getName() {
         return this.name;
     }
@@ -67,7 +70,9 @@ public class Node {
     public void setParent(Node parent) {
         this.parent = parent;
     }
-
+    public Node getParent(){
+        return parent;
+    }
     public void start() {
         if (this.script != null) {
             this.script.start();
@@ -122,7 +127,7 @@ public class Node {
     }
 
     private void updateGlobalTransform() {
-        if (parent != null) {
+        if (parent != null && this.inheritsTransform) {
             // Combine parent global transform with local transform
             this.globalTransform = combineTransforms(parent.getGlobalTransform(), this.localTransform);
         } else {
