@@ -30,17 +30,18 @@ public class Node {
         this.localTransform = new Transform();
         globalTransform = new Transform();
         this.localTransform.addObserver(this::updateGlobalTransform);
-        
+
     }
 
-   
     public void register(Script script) {
         this.script = script;
         this.script.init(localTransform, this);
     }
+
     public void setInheritsTransform(boolean inheritsTransform) {
         this.inheritsTransform = inheritsTransform;
     }
+
     public String getName() {
         return this.name;
     }
@@ -55,8 +56,8 @@ public class Node {
     }
 
     public void addChild(Node child) {
-        if(child instanceof Camera){
-            GameEngine.getInstance().setMainCamera((Camera)child);
+        if (child instanceof Camera) {
+            GameEngine.getInstance().setMainCamera((Camera) child);
         }
         child.setParent(this);
         this.children.add(child);
@@ -70,38 +71,47 @@ public class Node {
     public void setParent(Node parent) {
         this.parent = parent;
     }
-    public Node getParent(){
+
+    public Node getParent() {
         return parent;
     }
+
     public void start() {
         if (this.script != null) {
             this.script.start();
         }
         // Override in subclasses to update node logic
-        for (Node child : this.children) {
+        int size = this.children.size();
+        for (int i = 0; i < size; i++) {
+            Node child = this.children.get(i);
+
             child.start();
         }
     }
 
     public void update(double deltaTime) {
         // if (this.script != null) {
-        //     this.script.update(deltaTime);
+        // this.script.update(deltaTime);
         // }
         // Override in subclasses to update node logic
-
- 
 
         if (this.script != null) {
             this.script.update(deltaTime);
         }
-        for (Node child : this.children) {
+        int size = this.children.size();
+
+        for (int i = 0; i < size; i++) {
+            Node child = this.children.get(i);
+
             child.update(deltaTime);
         }
     }
 
     public void render(Renderer renderer) {
         // Override in subclasses to render the node
-        for (Node child : this.children) {
+        int size = this.children.size();
+        for (int i = 0; i < size; i++) {
+            Node child = this.children.get(i);
             child.render(renderer);
         }
     }
@@ -115,7 +125,7 @@ public class Node {
     }
 
     public Transform geTransform() {
-        return  localTransform;
+        return localTransform;
     }
 
     public Transform getLocalTransform() {
@@ -141,11 +151,10 @@ public class Node {
 
     private Transform combineTransforms(Transform parentTransform, Transform localTransform) {
         Transform combined = new Transform();
-        combined.setPosition( parentTransform.getPosition().add(localTransform.getPosition(), new Vector3f()));
-        combined.setRotation( parentTransform.getRotation().mul(localTransform.getRotation(), new Quaternionf()));
+        combined.setPosition(parentTransform.getPosition().add(localTransform.getPosition(), new Vector3f()));
+        combined.setRotation(parentTransform.getRotation().mul(localTransform.getRotation(), new Quaternionf()));
         combined.setScale(parentTransform.getScale().mul(localTransform.getScale(), new Vector3f()));
         return combined;
     }
-
 
 }

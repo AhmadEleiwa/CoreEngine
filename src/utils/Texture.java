@@ -10,7 +10,11 @@ public class Texture {
 
     public Texture(String filepath) {
         try {
-            id = TextureUtil.loadTexture(filepath);
+            int[] contexts = TextureUtil.loadTexture(filepath);
+            id = contexts[0];
+            width = contexts[1];
+            height = contexts[2];
+            
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

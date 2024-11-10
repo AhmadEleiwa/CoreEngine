@@ -52,16 +52,27 @@ public class Mesh {
         glBindVertexArray(0);
     }
     public  Mesh(Texture texture){
-        float vertices[] =  new float[]{
-            -0.5f, -0.5f, 0.0f, // Bottom-left
-             0.5f, -0.5f, 0.0f, // Bottom-right
-             0.5f,  0.5f, 0.0f, // Top-right
-            -0.5f,  0.5f, 0.0f  // Top-left
+        int width = texture.getWidth();
+        int height = texture.getHeight();
+        
+        // Calculate aspect ratio, ensuring the result is a float
+        float aspectRatio = (float) width / (float) height;
+        
+        // Define vertices with scaling on the X-axis based on the aspect ratio
+        float[] vertices = new float[] {
+            -0.5f * aspectRatio, -0.5f, 0.0f, // Bottom-left
+             0.5f * aspectRatio, -0.5f, 0.0f, // Bottom-right
+             0.5f * aspectRatio,  0.5f, 0.0f, // Top-right
+            -0.5f * aspectRatio,  0.5f, 0.0f  // Top-left
         };
-        int[] indices = new int[]{
+    
+        // Define indices for two triangles forming the rectangle
+        int[] indices = new int[] {
             0, 1, 2, // First triangle
             2, 3, 0  // Second triangle
         };
+    
+        // Define texture coordinates for the vertices
         float[] texCoords = {
             0.0f, 1.0f, // Bottom-left
             1.0f, 1.0f, // Bottom-right
@@ -69,6 +80,7 @@ public class Mesh {
             0.0f, 0.0f  // Top-left
         };
         
+        // Initialize the mesh with the texture and indices
         this.texture = texture;
         this.elementCount = indices.length;
 

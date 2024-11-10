@@ -6,6 +6,7 @@ import scenes.Node;
 import scenes.Sprite2D;
 import scripts.CameraScript;
 import scripts.PlayerScript;
+import scripts.RectScript;
 import utils.Camera;
 
 public class App {
@@ -42,6 +43,10 @@ public class App {
         node.addChild(player);
         // gameEngine.setMainCamera(camera);
         gameEngine.instantiate(node);
+
+
+        node2.register(new RectScript());
+
 
         gameEngine.run();
 

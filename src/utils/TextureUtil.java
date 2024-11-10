@@ -10,7 +10,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class TextureUtil {
 
-    public static int loadTexture(String filePath) throws IOException {
+    public static int[] loadTexture(String filePath) throws IOException {
         // Load image data
         ByteBuffer image;
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -34,15 +34,16 @@ public class TextureUtil {
 
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, format, GL_UNSIGNED_BYTE, image);
 
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            
 
             glBindTexture(GL_TEXTURE_2D, 0);
 
             // Free image memory
             STBImage.stbi_image_free(image);
-
-            return textureID;
+  
+            return new int[]{textureID,w,h};
         }
     }
 }

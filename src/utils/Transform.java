@@ -59,7 +59,6 @@ public class Transform {
         Transform other = (Transform) obj;
         return position.equals(other.position) && scale.equals(other.scale) && rotation.equals(other.rotation);
     }
-
     public Vector3f getPosition() {
         return position;
     }

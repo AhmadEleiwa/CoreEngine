@@ -105,6 +105,7 @@ public class GameEngine {
         GLFW.glfwShowWindow(window);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glEnable(GL11.GL_DEPTH_TEST);  // Enable depth testing
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GLFW.glfwSwapInterval(1); // Enable V-Sync
 
@@ -165,7 +166,9 @@ public class GameEngine {
     public Node getNode(String path) {
         return sceneManager.getNodeByPath(path);
     }
-
+    public Node getRoot(){
+        return sceneManager.getRootNode();
+    }
     public ShaderProgram createShaderProgram(String name, String vertixShaderPath, String fragmentShaderPath) {
         return programManager.instance(name, vertixShaderPath, fragmentShaderPath);
     }

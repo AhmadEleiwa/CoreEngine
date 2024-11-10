@@ -1,19 +1,19 @@
 package scripts;
 
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 
 import engine.Script;
-import input.Input;
-import scenes.Sprite2D;
 
 public class CameraScript extends Script {
     public boolean smoothMovement = true;
+    private float zOffset = 0;
     private Vector3f smoothedPosition(double deltaTime){
         Vector3f desiredPosition = new Vector3f(
             node.getParent().getLocalTransform().getPosition().x,
             transform.getPosition().y, // Maintain current Y position
             transform.getPosition().z // Maintain current Z position
+
+            // node.getParent().getLocalTransform().getPosition().z + zOffset
         );
 
         // Interpolate the camera's position towards the desired position
@@ -22,12 +22,15 @@ public class CameraScript extends Script {
         );
        
     }
+
+
     @Override
     public void start() {
         // TODO Auto-generated method stub
         // throw new UnsupportedOperationException("Unimplemented method 'start'");
         node.setInheritsTransform(false);
         transform.setPositionZ(5);
+        zOffset=Math.abs(node.getParent().getLocalTransform().getPosition().z - transform.getPosition().z);
     }
 
     @Override

@@ -3,7 +3,7 @@
     <property name="build" location="build"/>
     <property name="dist" location="dist"/>
     <property name="lib" location="lib"/>
-    <property name="native.dir" value="C:/Users/ahmad/Desktop/lwjgl-2.8.4/native"/>
+    <property name="native.dir" value="lib"/>
     <property name="assets" location="assets"/> <!-- Add this line -->
     <!-- Compile the source files -->
     <target name="compile">
