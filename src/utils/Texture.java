@@ -40,7 +40,12 @@ public class Texture {
     public int getHeight() {
         return height;
     }
-
+    public void setHeight(int height) {
+        this.height = height;
+    }
+    public void setWidth(int width) {
+        this.width = width;
+    }
     public int getId() {
         return id;
     }

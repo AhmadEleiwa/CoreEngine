@@ -10,6 +10,7 @@ import engine.GameEngine;
 import engine.Script;
 import graphics.Renderer;
 import utils.Camera;
+import utils.Collision2D;
 import utils.Transform;
 
 public class Node {
@@ -18,7 +19,6 @@ public class Node {
     protected List<Node> children;
     protected Transform localTransform;
     protected Transform globalTransform;
-
     protected boolean inheritsTransform = true;
 
     protected Script script;
@@ -135,7 +135,6 @@ public class Node {
     public Transform getGlobalTransform() {
         return globalTransform;
     }
-
     private void updateGlobalTransform() {
         if (parent != null && this.inheritsTransform) {
             // Combine parent global transform with local transform

@@ -2,21 +2,26 @@ package scripts;
 
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
-
 import engine.GameEngine;
 import engine.Script;
 import input.Input;
+import scenes.Node;
+import utils.Collision2D;
+import utils.CollisionDirection;
+import java.util.List;
 
 public class PlayerScript extends Script {
     float speed = 5f;
     float dir = 1;
     final float gravity = -9.78f;
-    final float jumpSpeed =7f; // Adjust jump speed as needed
+    final float jumpSpeed = 7f; // Adjust jump speed as needed
 
     // Track vertical velocity (the change in y position over time)
     float verticalVelocity = 0f;
     boolean isJumping = false;
     GameEngine engine = GameEngine.getInstance();
+    // public Node other;
+    public List<Collision2D> grounds; // List of ground collision objects
 
     @Override
     public void start() {
@@ -26,6 +31,20 @@ public class PlayerScript extends Script {
 
     @Override
     public void update(double deltaTime) {
+        // var x = (Collision2D) (other.getChildByName("Collision"));
+        var thisXoll = (Collision2D) (node.getChildByName("Collision"));
+        // var collide = thisXoll.checkCollisionDirection(x);
+
+        boolean isOnGround = false;
+
+        // Check collision with any ground in the list
+        for (Collision2D ground : grounds) {
+            var collideGround = thisXoll.checkCollisionDirection(ground);
+            if (collideGround == CollisionDirection.TOP) {
+                isOnGround = true;
+                break; // No need to check further if on ground
+            }
+        }
 
         if (Input.isKeyDown(GLFW.GLFW_KEY_D)) {
             dir = 1;
@@ -36,39 +55,27 @@ public class PlayerScript extends Script {
         } else {
             dir = 0;
         }
-        boolean isOnGround = transform.getPosition().y == 0;
 
-        // Jumping Logic
+        // Jump logic: only jump if the player is on the ground
         if (Input.isKeyDown(GLFW.GLFW_KEY_W) && isOnGround) {
-            verticalVelocity = jumpSpeed; // Set the vertical velocity to jump speed
+            verticalVelocity = jumpSpeed;
+            isOnGround = false; // Mark as not on ground to initiate jump
         }
-        
-        // Gravity application (gravity is always applied when not on the ground)
+
+        // Apply gravity if not on ground
         if (!isOnGround) {
-            verticalVelocity += gravity * deltaTime;  // Apply gravity
-        }
-        
-        // Apply vertical velocity to move the player
-        transform.moveY((float)(verticalVelocity * deltaTime));
-        
-        // Check if the player has hit the ground
-        if (transform.getPosition().y <= 0) {
-            transform.getPosition().y = 0;  // Ensure player doesn't fall below the ground
-            isOnGround = true;  // Player is back on the ground
-            verticalVelocity = 0;  // Reset vertical velocity once the player is grounded
+            verticalVelocity += gravity * deltaTime;
         } else {
-            isOnGround = false;  // Player is in the air
+            verticalVelocity = 0; // Stop vertical movement on ground
         }
 
-        // if(Input.isKeyDown(GLFW.GLFW_KEY_UP)){
-        //     transform.moveZ((float) (-speed * deltaTime));
-        // }
-        // if(Input.isKeyDown(GLFW.GLFW_KEY_DOWN)){
-        //     transform.moveZ((float) (speed * deltaTime));
+        // Apply vertical velocity
+        transform.moveY((float) (verticalVelocity * deltaTime));
 
-        // }
+        // Horizontal movement
         transform.moveX((float) (speed * deltaTime) * dir);
-
+        if(transform.getPosition().y <= -5){
+            transform.setPosition(new Vector3f(0,3,0));
+        }
     }
-
 }

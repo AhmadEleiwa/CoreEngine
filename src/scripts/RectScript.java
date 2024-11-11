@@ -1,6 +1,5 @@
 package scripts;
 
-import org.joml.Vector3f;
 
 import engine.GameEngine;
 import engine.Script;

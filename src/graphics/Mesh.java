@@ -1,6 +1,7 @@
 package graphics;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_LINE_LOOP;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_INT;
 import static org.lwjgl.opengl.GL11.glDrawElements;
@@ -24,8 +25,13 @@ public class Mesh {
     protected int elementCount;
     protected int texVboId;
     protected Texture texture;
+    protected boolean outline = false;
     protected Mesh(){
 
+    }
+    public Mesh(float[] vertices, int[] indices, boolean outline){
+        this( vertices,  indices);
+        this.outline = outline;
     }
     public Mesh(float[] vertices, int[] indices) {
         this.elementCount = indices.length;
@@ -51,9 +57,10 @@ public class Mesh {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
-    public  Mesh(Texture texture){
-        int width = texture.getWidth();
-        int height = texture.getHeight();
+
+    public  Mesh(Texture texture, int width, int height){
+        // int width = texture.getWidth();
+        // int height = texture.getHeight();
         
         // Calculate aspect ratio, ensuring the result is a float
         float aspectRatio = (float) width / (float) height;
@@ -147,7 +154,15 @@ public class Mesh {
         if(texture != null)
             texture.bind();
         glBindVertexArray(vaoId);
+    if (outline) {
+        // Draw an outlined rectangle using GL_LINE_LOOP
+        for (int i = 0; i < elementCount; i += 4) {
+            glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_INT, i * Integer.BYTES);
+        }
+    } else {
+        // Draw filled triangles as usual
         glDrawElements(GL_TRIANGLES, elementCount, GL_UNSIGNED_INT, 0);
+    }
         glBindVertexArray(0);
         if(texture != null)
             texture.unbind();
