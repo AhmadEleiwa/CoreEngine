@@ -14,7 +14,7 @@ import graphics.Renderer;
 import graphics.SceneManager;
 import graphics.ShaderProgram;
 import input.Input;
-
+import scenes.CollisionShape2D;
 import scenes.Node;
 import utils.Camera;
 import utils.Texture;
@@ -23,13 +23,13 @@ public class GameEngine {
     private Renderer renderer;
     private SceneManager sceneManager;
     private ProgramManager programManager;
+    private PhysicsManager physicsManager;
 
     private long window;
 
     private HashMap<String, Texture> textureStore;
 
     private static GameEngine instance;
-
 
     private int width = 800;
     private int height = 600;
@@ -51,6 +51,7 @@ public class GameEngine {
         renderer = new Renderer(window, width, height);
         sceneManager = new SceneManager();
         programManager = new ProgramManager();
+        physicsManager = new PhysicsManager();
         // inputManager = new InputManager(window);
 
         textureStore = new HashMap<>();
@@ -105,7 +106,7 @@ public class GameEngine {
         GLFW.glfwShowWindow(window);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-        GL11.glEnable(GL11.GL_DEPTH_TEST);  // Enable depth testing
+        GL11.glEnable(GL11.GL_DEPTH_TEST); // Enable depth testing
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GLFW.glfwSwapInterval(1); // Enable V-Sync
 
@@ -124,6 +125,7 @@ public class GameEngine {
             // Input.update();
             // programManager.
             sceneManager.update(deltaTime);
+            physicsManager.handlePhysics();
 
             renderer.clear();
             sceneManager.render(renderer);
@@ -156,9 +158,11 @@ public class GameEngine {
     public void instantiate(Node node) {
         sceneManager.addRootNode(node);
     }
-    public void setMainCamera(Camera camera){
+
+    public void setMainCamera(Camera camera) {
         renderer.setMainCamera(camera);
     }
+
     public List<Node> findNodesByName(String name) {
         return sceneManager.getNodesByName(name);
     }
@@ -166,28 +170,40 @@ public class GameEngine {
     public Node getNode(String path) {
         return sceneManager.getNodeByPath(path);
     }
-    public Node getRoot(){
+
+    public Node getRoot() {
         return sceneManager.getRootNode();
     }
+
     public ShaderProgram createShaderProgram(String name, String vertixShaderPath, String fragmentShaderPath) {
         return programManager.instance(name, vertixShaderPath, fragmentShaderPath);
     }
-    public ShaderProgram getProgram(String name){
+
+    public ShaderProgram getProgram(String name) {
         return programManager.getProgram(name);
     }
-    public void startProgram(String name){
+
+    public void startProgram(String name) {
         programManager.startProgram(name);
     }
-    public void stopProgram(String name){
+
+    public void stopProgram(String name) {
         programManager.stopProgram(name);
     }
-    public Set<String> getProgramsNameSet(){
+
+    public Set<String> getProgramsNameSet() {
         return programManager.getKeys();
     }
+
     public boolean isKeyPressed(int key) {
         return GLFW.glfwGetKey(window, key) == GLFW.GLFW_PRESS;
     }
-    public Renderer getRenderer(){
+
+    public Renderer getRenderer() {
         return renderer;
+    }
+
+    public void addCollision(CollisionShape2D child) {
+        physicsManager.addCollision(child);
     }
 }

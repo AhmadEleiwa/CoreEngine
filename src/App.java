@@ -4,12 +4,15 @@ import java.util.Random;
 
 import org.joml.Vector3f;
 import engine.GameEngine;
+import scenes.CollisionShape2D;
 import scenes.Node;
+import scenes.RigidBody2D;
 import scenes.Sprite2D;
+import scenes.StaticBody2D;
 import scripts.CameraScript;
 import scripts.PlayerScript;
+import scripts.RectScript;
 import utils.Camera;
-import utils.Collision2D;
 
 public class App {
 
@@ -18,27 +21,51 @@ public class App {
 
         Node node = new Node("root");
 
-        Sprite2D player = new Sprite2D("player", gameEngine.createTexture("assets/images/Player.png"));
-        player.addChild(new Collision2D(0.8f, 0.6f));
+     
 
-        PlayerScript sc = new PlayerScript();
+        Sprite2D player = new Sprite2D("sprite2D", gameEngine.createTexture("assets/images/Player.png"));
+        RigidBody2D rigidBody2D = new  RigidBody2D("Palyer", 1);
+        rigidBody2D.addChild(player);
+        CollisionShape2D collPlayer = new CollisionShape2D(0.7f, 0.8f);
+        collPlayer.getTransform().moveY(0.1f);
+        rigidBody2D.addChild(collPlayer);
+        rigidBody2D.register(new PlayerScript());
+        // PlayerScript sc = new PlayerScript();
 
-        player.register(sc);
+        StaticBody2D ground2 = new StaticBody2D("ground2");
+        ground2.addChild(new CollisionShape2D(1, 1));
+        ground2.getLocalTransform().moveY(-1);
+        ground2.getLocalTransform().moveX(0f);
 
-        player.getLocalTransform().setPosition(new Vector3f(0, 0, 0));
+
+        node.addChild(ground2);
+
+        StaticBody2D ground = new StaticBody2D("ground");
+        ground.addChild(new CollisionShape2D(20, 1));
+        ground.getLocalTransform().moveY(-2);
+
+        node.addChild(ground);
+
+  
+
+
+        // player.register(sc);
+        node.addChild(rigidBody2D);
         Camera camera = new Camera("MainCamera");
         CameraScript cameraScript = new CameraScript();
         camera.register(cameraScript);
-        var grounds = App.getValidGroundSprites();
+
+        rigidBody2D.addChild(camera);
+
+        // var grounds = App.getValidGroundSprites();
         // sc.grounds = grounds;
-        player.addChild(camera);
-        node.addChild(player);
-        List<Collision2D> groundsColl = new ArrayList<Collision2D>();
-        for (Sprite2D s : grounds) {
-            node.addChild(s);
-            groundsColl.add((Collision2D) s.getChildByName("Collision"));
-        }
-        sc.grounds = groundsColl;
+
+        // List<CollisionShape2D> groundsColl = new ArrayList<CollisionShape2D>();
+        // for (Sprite2D s : grounds) {
+        //     node.addChild(s);
+        //     groundsColl.add((CollisionShape2D) s.getChildByName("Collision"));
+        // }
+        // sc.grounds = groundsColl;
 
         // Background
         Sprite2D bg1 = new Sprite2D("bg1", gameEngine.createTexture("assets/images/background_layer_1.png"));
@@ -84,7 +111,7 @@ public class App {
         // Generate 15 ground sprites
         for (int i = 0; i < 15; i++) {
             // Create the collision shape for the ground sprite
-            Collision2D groundColl = new Collision2D(1.8f, 0.2f);
+            CollisionShape2D groundColl = new CollisionShape2D(1.8f, 0.2f);
             groundColl.getLocalTransform().setPositionY(-0.2f); // Position adjustment for collision
 
             // Create the ground sprite with texture

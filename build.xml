@@ -28,6 +28,12 @@
         <mkdir dir="${dist}/lib"/>
         <copy todir="${dist}/lib">
             <!-- Copy only the specific JAR files to dist/lib -->
+            <fileset dir="${native.dir}">
+                <include name="*.dll"/> <!-- for Windows natives -->
+                <include name="*.so"/> <!-- for Linux natives -->
+                <include name="*.dylib"/> <!-- for macOS natives -->
+            </fileset>
+
             <fileset dir="${lib}">
                 <include name="lwjgl.jar"/>
                 <include name="lwjgl-glfw.jar"/>

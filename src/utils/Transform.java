@@ -8,9 +8,9 @@ import org.joml.Vector3f;
 import org.joml.Quaternionf;
 
 public class Transform {
-    protected Vector3f position;
+    public Vector3f position;
     protected Quaternionf rotation;
-    protected Vector3f scale;
+    public Vector3f scale;
 
     private final List<Runnable> observers = new ArrayList<>();
 

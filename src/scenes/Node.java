@@ -10,7 +10,7 @@ import engine.GameEngine;
 import engine.Script;
 import graphics.Renderer;
 import utils.Camera;
-import utils.Collision2D;
+
 import utils.Transform;
 
 public class Node {
@@ -124,7 +124,7 @@ public class Node {
         return children;
     }
 
-    public Transform geTransform() {
+    public Transform getTransform() {
         return localTransform;
     }
 

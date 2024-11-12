@@ -6,7 +6,7 @@ import engine.Script;
 
 public class CameraScript extends Script {
     public boolean smoothMovement = true;
-    private float zOffset = 0;
+    // private float zOffset = 0;
     private Vector3f smoothedPosition(double deltaTime){
         Vector3f desiredPosition = new Vector3f(
             node.getParent().getLocalTransform().getPosition().x,
@@ -30,7 +30,7 @@ public class CameraScript extends Script {
         // throw new UnsupportedOperationException("Unimplemented method 'start'");
         node.setInheritsTransform(false);
         transform.setPositionZ(5);
-        zOffset=Math.abs(node.getParent().getLocalTransform().getPosition().z - transform.getPosition().z);
+        // zOffset=Math.abs(node.getParent().getLocalTransform().getPosition().z - transform.getPosition().z);
     }
 
     @Override
