@@ -12,6 +12,7 @@ import scenes.StaticBody2D;
 import scripts.CameraScript;
 import scripts.PlayerScript;
 import scripts.RectScript;
+
 import utils.Camera;
 
 public class App {
@@ -26,24 +27,42 @@ public class App {
         Sprite2D player = new Sprite2D("sprite2D", gameEngine.createTexture("assets/images/Player.png"));
         RigidBody2D rigidBody2D = new  RigidBody2D("Palyer", 1);
         rigidBody2D.addChild(player);
-        CollisionShape2D collPlayer = new CollisionShape2D(0.7f, 0.8f);
+        CollisionShape2D collPlayer = new CollisionShape2D(1f, 1f);
+        rigidBody2D.setRestitution(0.1f);
+        collPlayer.getLocalTransform().setScale(new Vector3f(0.7f,0.8f,1));
         collPlayer.getTransform().moveY(0.1f);
         rigidBody2D.addChild(collPlayer);
-        rigidBody2D.register(new PlayerScript());
+
+        PlayerScript playerScript = new PlayerScript();
+        RectScript rectScript=new RectScript();
+
+        collPlayer.register(rectScript);
+
+  
+
+        rigidBody2D.register(playerScript);
         // PlayerScript sc = new PlayerScript();
 
-        StaticBody2D ground2 = new StaticBody2D("ground2");
-        ground2.addChild(new CollisionShape2D(1, 1));
-        ground2.getLocalTransform().moveY(-1);
+        RigidBody2D ground2 = new RigidBody2D("collision 1", 10000000);
+        ground2.addChild(new CollisionShape2D(1f, 1f));
+        ground2.getLocalTransform().moveY(0);
         ground2.getLocalTransform().moveX(0f);
 
+        RigidBody2D ground3 = new RigidBody2D("colliosn 2", 1);
+        ground3.addChild(new CollisionShape2D(1, 1));
+        ground3.getLocalTransform().moveY(0);
+        ground3.getLocalTransform().moveX(2f);
+
+        node.addChild(ground3);
 
         node.addChild(ground2);
 
         StaticBody2D ground = new StaticBody2D("ground");
-        ground.addChild(new CollisionShape2D(20, 1));
+        CollisionShape2D colGround = new CollisionShape2D(1, 1);
+        colGround.getLocalTransform().setScale(new Vector3f(20,0.5f,1));
+        ground.addChild(colGround);
         ground.getLocalTransform().moveY(-2);
-
+        ground.onTrigger= false;
         node.addChild(ground);
 
   

@@ -4,120 +4,120 @@ import scenes.CollisionShape2D;
 import scenes.Node;
 import scenes.RigidBody2D;
 import scenes.StaticBody2D;
-import utils.CollisionDirection;
+import signals.Event;
+import signals.TriggerEvent;
+import utils.CollisionResult;
+import utils.Transformation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
+import org.joml.Vector3f;
 
 public class PhysicsManager {
     private List<CollisionShape2D> collisionShapes;
+    private HashMap<String, CollisionShape2D> triggers;
 
     public PhysicsManager() {
         collisionShapes = new ArrayList<>();
+        triggers = new HashMap<>();
     }
 
     public void addCollision(CollisionShape2D collisionShape2D) {
         this.collisionShapes.add(collisionShape2D);
     }
 
-    public void handlePhysics() {
+    public void handlePhysics(HashMap<String, Event> eventMap) {
         processCollisions();
+        if (triggers.size() == 0) {
+            if (eventMap.get("OnTrigger") != null)
+                eventMap.remove("OnTrigger");
+        } else {
+            eventMap.put("OnTrigger", new TriggerEvent(triggers));
+        }
     }
 
     private void processCollisions() {
+        triggers.clear();
         for (int i = 0; i < collisionShapes.size(); i++) {
             CollisionShape2D shapeA = collisionShapes.get(i);
             Node parentA = shapeA.getParent();
-            shapeA.setCollisionFromLeft(false);
-            shapeA.setCollisionFromRight(false);
+            shapeA.setCollisionFromBottom(false);
             shapeA.setCollisionFromTop(false);
             shapeA.setCollisionFromBottom(false);
+            shapeA.setCollisionFromBottom(false);
+
             for (int j = i + 1; j < collisionShapes.size(); j++) {
                 CollisionShape2D shapeB = collisionShapes.get(j);
                 Node parentB = shapeB.getParent();
-
-                // Only check if at least one of the objects is a RigidBody2D (not both Static)
-                if (parentA instanceof RigidBody2D && parentB instanceof StaticBody2D) {
-                    // StaticBody2D staticBodyB = (StaticBody2D) parentB;
-
-                    CollisionDirection collisionDirection = shapeA.checkCollisionDirection(shapeB);
-
-                    // if (collisionDirection != CollisionDirection.NONE) {
-                    handleStaticToRigidCollision(shapeA, collisionDirection);
-                    // }
-                } else if (parentB instanceof RigidBody2D && parentA instanceof StaticBody2D) {
-                    // StaticBody2D staticBodyA = (StaticBody2D) parentA;
-
-                    CollisionDirection collisionDirection = shapeA.checkCollisionDirection(shapeB);
-
-                    // if (collisionDirection != CollisionDirection.NONE) {
-
-                    handleStaticToRigidCollision(shapeB, collisionDirection);
-                    // }
+                if (parentA instanceof StaticBody2D && parentB instanceof StaticBody2D) {
+                    continue;
                 }
-                // Handle RigidBody2D to RigidBody2D collisions
-                else if (parentA instanceof RigidBody2D && parentB instanceof RigidBody2D) {
-                    RigidBody2D rigidBodyA = (RigidBody2D) parentA;
-                    RigidBody2D rigidBodyB = (RigidBody2D) parentB;
+                CollisionResult res = shapeA.checkCollisionDirectionV2(shapeB);
+                if (parentA.getName() == "Palyer" && res.normal.x < 0)
+                    System.out.println(res.normal.x);
+                switch ((int) res.normal.x) {
+                    case -1:
+                        shapeA.setCollisionFromLeft(true);
+                        break;
+                    case 1:
+                        shapeA.setCollisionFromRight(true);
+                        break;
+                    default:
+                        shapeA.setCollisionFromLeft(false);
+                        shapeA.setCollisionFromRight(false);
+                        break;
+                }
 
-                    CollisionDirection collisionDirection = shapeA.checkCollisionDirection(shapeB);
-                    if (collisionDirection != null) {
-                        handleRigidToRigidCollision(rigidBodyA, rigidBodyB, collisionDirection);
+                shapeA.setCollisionFromBottom(false);
+                if (res.colide) {
+                    triggers.put(shapeA.getName(), shapeB);
+                    if (parentA instanceof StaticBody2D) {
+                        if (!((StaticBody2D) parentA).onTrigger) {
+                            parentB.getLocalTransform().move(Transformation.mulScaler(res.normal, res.depth));
+                            ((RigidBody2D) parentB).setOnGround(true);
+                        } else {
+                            continue;
+
+                        }
+
+                    } else if (parentB instanceof StaticBody2D) {
+                        if (!((StaticBody2D) parentB).onTrigger) {
+                            parentA.getLocalTransform()
+                                    .move(Transformation.mulScaler(Transformation.invert(res.normal), res.depth));
+                            ((RigidBody2D) parentA).setOnGround(true);
+                        } else {
+                            continue;
+                        }
+                    } else {
+                        ((RigidBody2D) parentA).setOnGround(true);
+
+                        parentA.getLocalTransform()
+                                .move(Transformation.mulScaler(Transformation.invert(res.normal), res.depth / 2f));
+                        parentB.getLocalTransform().move(Transformation.mulScaler(res.normal, res.depth / 2f));
                     }
+                    resolveCollison((RigidBody2D) parentA, (RigidBody2D) parentB, res.normal, res.depth);
                 }
+
             }
         }
     }
 
-    // Handle collision between StaticBody2D and RigidBody2D
-    private void handleStaticToRigidCollision(CollisionShape2D rigidBody, CollisionDirection direction) {
-        rigidBody.setCollisionFromLeft(rigidBody.isCollisionFromLeft() | false);
-        rigidBody.setCollisionFromRight(rigidBody.isCollisionFromRight() | false);
-        rigidBody.setCollisionFromTop(rigidBody.isCollisionFromTop() | false);
-        rigidBody.setCollisionFromBottom(rigidBody.isCollisionFromBottom() | false);
-
-        if (direction == CollisionDirection.TOP) {
-
-            rigidBody.setCollisionFromTop(true);
-
-        } else if (direction == CollisionDirection.BOTTOM) {
-            rigidBody.setCollisionFromBottom(true);
-
-        } else if (direction == CollisionDirection.LEFT) {
-            // Stop movement to the left if colliding with an object on the left
-            // rigidBody.setCollisionFromRight(true);
-            rigidBody.setCollisionFromLeft(true);
-
-        } else if (direction == CollisionDirection.RIGHT) {
-            // Stop movement to the right if colliding with an object on the right
-            rigidBody.setCollisionFromRight(true);
-            // rigidBody.setCollisionFromLeft(true);
-
-        } else {
-
+    private void resolveCollison(RigidBody2D bodyA, RigidBody2D bodyB, Vector3f normal, float depth) {
+        Vector3f relativeVelocity = Transformation.subtractVector3f(bodyB.getVelocity(), bodyA.getVelocity());
+        if (Transformation.dot(normal, relativeVelocity) > 0f) {
+            return;
         }
+        float e = Math.min(bodyA.getRestitution(), bodyB.getRestitution());
+        float j = -(1f + e) * Transformation.dot(normal, relativeVelocity);
+        j /= bodyA.getInvMass() + bodyB.getInvMass();
+        bodyA.getVelocity().sub(Transformation.mulScaler(normal, j * bodyA.getInvMass()));
+        bodyB.getVelocity().add(Transformation.mulScaler(normal, j * bodyB.getInvMass()));
 
     }
 
-    // Handle collision between two RigidBody2D instances (Elastic Collision)
-    private void handleRigidToRigidCollision(RigidBody2D rigidBodyA, RigidBody2D rigidBodyB,
-            CollisionDirection direction) {
-        // Calculate velocities after the collision (simplified)
-        float massA = rigidBodyA.getMass();
-        float massB = rigidBodyB.getMass();
-
-        float newVelocityA = (rigidBodyA.getVelocity() * (massA - massB) + 2 * massB * rigidBodyB.getVelocity())
-                / (massA + massB);
-        float newVelocityB = (rigidBodyB.getVelocity() * (massB - massA) + 2 * massA * rigidBodyA.getVelocity())
-                / (massA + massB);
-
-        if (direction == CollisionDirection.LEFT || direction == CollisionDirection.RIGHT) {
-            rigidBodyA.setHorizontalVelocity(newVelocityA);
-            rigidBodyB.setHorizontalVelocity(newVelocityB);
-        } else if (direction == CollisionDirection.TOP || direction == CollisionDirection.BOTTOM) {
-            rigidBodyA.setVerticalVelocity(newVelocityA);
-            rigidBodyB.setVerticalVelocity(newVelocityB);
-        }
+    public int getSize() {
+        return collisionShapes.size();
     }
-
 }

@@ -16,6 +16,7 @@ import graphics.ShaderProgram;
 import input.Input;
 import scenes.CollisionShape2D;
 import scenes.Node;
+import signals.Event;
 import utils.Camera;
 import utils.Texture;
 
@@ -34,6 +35,7 @@ public class GameEngine {
     private int width = 800;
     private int height = 600;
 
+    private HashMap<String, Event> eventMap;
     public static GameEngine getInstance() {
         if (instance == null) {
             synchronized (GameEngine.class) {
@@ -47,8 +49,8 @@ public class GameEngine {
 
     private GameEngine() {
         init();
-
-        renderer = new Renderer(window, width, height);
+        eventMap = new HashMap<>();
+        renderer = new Renderer(window, width, height, eventMap);
         sceneManager = new SceneManager();
         programManager = new ProgramManager();
         physicsManager = new PhysicsManager();
@@ -125,7 +127,7 @@ public class GameEngine {
             // Input.update();
             // programManager.
             sceneManager.update(deltaTime);
-            physicsManager.handlePhysics();
+            physicsManager.handlePhysics(eventMap);
 
             renderer.clear();
             sceneManager.render(renderer);
@@ -205,5 +207,9 @@ public class GameEngine {
 
     public void addCollision(CollisionShape2D child) {
         physicsManager.addCollision(child);
+    }
+    public int getCollisionsSize(){
+       return physicsManager.getSize();
+
     }
 }

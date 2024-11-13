@@ -1,22 +1,33 @@
 package scenes;
 
+import org.joml.Vector3f;
+
 import engine.GameEngine;
+import utils.Transformation;
 
 public class RigidBody2D extends Node {
-    private float mass;
-    private float horizontalVelocity = 0;
-    private float verticalVelocity = 0;
     private final float gravity = -9.8f;
-    private boolean isGrounded = false;
     private CollisionShape2D collision;
-    private final float groundTolerance = 0.01f; // Small value to prevent player from being slightly inside the ground
-    private final float ceilingTolerance = 0.01f; // Small value for ceiling collision tolerance
-    private final float leftTolerance = 0.001f; // Small value for left side collision tolerance
-    private final float rightTolerance = 0.001f; // Small value for right side collision tolerance
+
+    private Vector3f force;
+    private Vector3f rotationVelocity;
+    private Vector3f velocity;
+
+    private float density;
+    private float mass;
+    private float restitution = 0.5f;
+    private float area;
+    private float invMass;
+
+    private boolean onGround = false;
 
     public RigidBody2D(String name, float mass) {
         super(name);
         this.mass = mass;
+        if (mass == 0)
+            this.invMass = 0;
+        else
+            this.invMass = 1f / this.mass;
     }
 
     @Override
@@ -24,8 +35,12 @@ public class RigidBody2D extends Node {
         super.addChild(child);
         if (child instanceof CollisionShape2D) {
             collision = (CollisionShape2D) child;
+            int nth = GameEngine.getInstance().getCollisionsSize();
+            child.name  += nth; 
             GameEngine.getInstance().addCollision((CollisionShape2D) child);
         }
+        this.force = new Vector3f(0, 0, 0);
+        this.velocity = new Vector3f(0);
     }
 
     @Override
@@ -35,12 +50,32 @@ public class RigidBody2D extends Node {
         // applyGravity(deltaTime);
     }
 
-    public boolean isGrounded() {
-        return this.isGrounded;
+    public float getInvMass() {
+        return invMass;
     }
 
-    public void setIsGrounded(boolean isGrounded) {
-        this.isGrounded = isGrounded;
+    public void setInvMass(float invMass) {
+        this.invMass = invMass;
+    }
+
+    public float getRestitution() {
+        return restitution;
+    }
+
+    public void setRestitution(float restitution) {
+        this.restitution = restitution;
+    }
+
+    public void setVelocity(Vector3f vec) {
+        velocity = vec;
+    }
+
+    public Vector3f getForce() {
+        return force;
+    }
+
+    public void setForce(Vector3f force) {
+        this.force = force;
     }
 
     public float getMass() {
@@ -51,89 +86,21 @@ public class RigidBody2D extends Node {
         this.mass = mass;
     }
 
-    public float getHorizontalVelocity() {
-
-        return horizontalVelocity;
+    public void setOnGround(boolean val) {
+        this.onGround = val;
     }
 
-    public void setHorizontalVelocity(float horizontalVelocity) {
-        this.horizontalVelocity = horizontalVelocity;
-    }
-
-    public float getVerticalVelocity() {
-        return verticalVelocity;
-    }
-
-    public void setVerticalVelocity(float verticalVelocity) {
-        this.verticalVelocity = verticalVelocity;
-    }
-
-    public void jump(float jumpForce) {
-        if (isGrounded()) { // Only allow jumping if grounded
-            verticalVelocity = jumpForce; // Apply upward force
-            setIsGrounded(false); // Mark as airborne
-        }
+    public boolean getOnGround() {
+        return this.onGround;
     }
 
     public void updatePosition(double deltaTime) {
-        // System.out.println();
-        float newX = localTransform.getPosition().x + horizontalVelocity * (float) deltaTime;
-
-        if (this.collision.isCollisionFromLeft() && horizontalVelocity > 0
-                || this.collision.isCollisionFromRight() && horizontalVelocity < 0) {
-            // localTransform.setPositionX(0);
-            if(this.collision.isCollisionFromLeft() && horizontalVelocity > 0)
-                newX = localTransform.getPosition().x - leftTolerance;
-            else
-                newX = localTransform.getPosition().x + rightTolerance;
-            
-            localTransform.setPositionX(newX);
-
-        } else {
-            // newX = localTransform.getPosition().x - groundTolerance;
-            localTransform.setPositionX(newX);
-        }
-
-
-        
-        if (!this.collision.isCollisionFromTop() && Math.abs(horizontalVelocity) > 0) {
-            isGrounded = false;
-        }
-        // Apply gravity when not grounded
-        if (!isGrounded()) {
-            verticalVelocity += gravity * deltaTime;
-        }
-        float newY = localTransform.getPosition().y + verticalVelocity * (float) deltaTime;
-
-        // Collision detection from top (landing)
-        if (collision.isCollisionFromTop()) {
-            // If the player is colliding from above, stop the fall (landing)
-            setIsGrounded(true); // Player is grounded now
-            verticalVelocity = 0; // Stop downward velocity
-
-            // Adjust position to prevent player from being inside the ground
-            if (verticalVelocity <= 0 && localTransform.getPosition().y < newY + ceilingTolerance) {
-                newY = localTransform.getPosition().y + groundTolerance; // Push player up above the ground
-            }
-        }
-        // Collision detection from bottom (collision with floor or platform)
-        if (collision.isCollisionFromBottom()) {
-            // If the player is colliding from below (floor/platform), stop their downward
-            // motion
-            verticalVelocity = 0; // Stop downward velocity (prevents sinking into the ground)
-
-            // Adjust position to prevent player from overlapping with the surface below
-            if (verticalVelocity >= 0 && localTransform.getPosition().y > newY - groundTolerance) {
-                newY = localTransform.getPosition().y - groundTolerance; // Push player up slightly above the floor
-            }
-        }
-        // localTransform.setPositionY(newY);
-        localTransform.setPositionY(newY);
-
+        this.velocity.y += gravity * (float) deltaTime;
+        localTransform.move(Transformation.mulScaler(velocity, (float) deltaTime));
     }
 
-    public float getVelocity() {
-        return (float) Math.sqrt(horizontalVelocity * horizontalVelocity + verticalVelocity * verticalVelocity);
+    public Vector3f getVelocity() {
+        return this.velocity;
     }
 
 }

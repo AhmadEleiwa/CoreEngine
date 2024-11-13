@@ -20,7 +20,7 @@ public class Node {
     protected Transform localTransform;
     protected Transform globalTransform;
     protected boolean inheritsTransform = true;
-
+    protected int Layer;
     protected Script script;
     // protected GameEngine gameEngine ;
 
@@ -109,6 +109,10 @@ public class Node {
 
     public void render(Renderer renderer) {
         // Override in subclasses to render the node
+        if (this.script != null) {
+            this.script._processSignal(renderer.getEvent());
+        }
+
         int size = this.children.size();
         for (int i = 0; i < size; i++) {
             Node child = this.children.get(i);
